@@ -1,206 +1,642 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cinematic Demo</title>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>for chikuu</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Jost:ital,wght@0,200;0,300;0,400;1,200;1,300&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 
-<style>
-body{
-margin:0;
-background:black;
-color:white;
-font-family:Arial, sans-serif;
-overflow:hidden;
-height:100vh;
-display:flex;
-justify-content:center;
-align-items:center;
-}
+    :root {
+      --black:   #07060a;
+      --dark:    #0f0d14;
+      --rose:    #c9848a;
+      --rose-lt: #e0b0b6;
+      --gold:    #d4a96a;
+      --gold-lt: #e8c898;
+      --cream:   #f2ede6;
+      --muted:   rgba(242,237,230,0.45);
+      --faint:   rgba(242,237,230,0.18);
+    }
 
-/* container */
-.container{
-position:relative;
-width:100%;
-height:100%;
-display:flex;
-justify-content:center;
-align-items:center;
-text-align:center;
-}
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--black);
+      color: var(--cream);
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+      overflow-x: hidden;
+    }
 
-/* text */
-.text{
-font-size:clamp(22px,4vw,40px);
-opacity:0;
-transform:translateY(20px);
-transition:opacity 1.5s ease, transform 1.5s ease;
-}
-.show{
-opacity:1;
-transform:translateY(0);
-}
+    /* ── cursor ── */
+    body { cursor: none; }
+    #cur {
+      position: fixed; z-index: 9999; pointer-events: none;
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--rose-lt);
+      transform: translate(-50%,-50%);
+      transition: transform .15s ease;
+      mix-blend-mode: screen;
+    }
+    #cur2 {
+      position: fixed; z-index: 9998; pointer-events: none;
+      width: 32px; height: 32px; border-radius: 50%;
+      border: 1px solid rgba(201,132,138,0.35);
+      transform: translate(-50%,-50%);
+      transition: left .13s ease, top .13s ease;
+    }
 
-/* glow */
-.glow{
-text-shadow:0 0 20px #ff4da6,0 0 40px #ff4da6;
-}
+    /* ── reading bar ── */
+    #rbar {
+      position: fixed; top:0; left:0; height:1px;
+      background: linear-gradient(90deg, var(--rose), var(--gold));
+      z-index: 300; width:0; transition: width .08s linear;
+    }
 
-/* cake */
-#cake{
-position:absolute;
-bottom:20%;
-font-size:clamp(60px,8vw,100px);
-opacity:0;
-transition:opacity 1.5s;
-}
+    /* ════ SECTION 1 — OPENING ════ */
+    .s1 {
+      position: relative;
+      height: 100vh; min-height: 600px;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+    }
+    .s1-bg {
+      position: absolute; inset:0;
+      background: url('https://images.unsplash.com/photo-1518895949257-7621c3c786d7?w=1600&q=80') center/cover no-repeat;
+      transform: scale(1.08);
+      animation: heroZoom 18s ease-out forwards;
+      filter: brightness(0.35) saturate(0.8);
+    }
+    @keyframes heroZoom { to { transform: scale(1); } }
+    .s1::after {
+      content:''; position:absolute; inset:0;
+      background: radial-gradient(ellipse at 50% 60%, transparent 30%, rgba(7,6,10,0.85) 100%);
+    }
+    .s1-content {
+      position: relative; z-index:2;
+      text-align: center;
+      padding: 0 24px;
+    }
+    .s1-pre {
+      font-size: .72rem; letter-spacing: 7px;
+      color: var(--rose); text-transform: uppercase;
+      opacity: 0; animation: fadeUp 1.6s ease forwards .6s;
+      margin-bottom: 32px;
+    }
+    .s1-name {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(5rem, 18vw, 14rem);
+      font-weight: 900;
+      font-style: italic;
+      line-height: .9;
+      background: linear-gradient(135deg, var(--rose-lt) 0%, var(--gold-lt) 55%, var(--rose-lt) 100%);
+      background-size: 200% 200%;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      opacity: 0; animation: fadeUp 1.8s ease forwards 1s, nameShimmer 6s ease-in-out infinite 3s;
+      filter: drop-shadow(0 0 60px rgba(201,132,138,0.25));
+      margin-bottom: 28px;
+    }
+    @keyframes nameShimmer {
+      0%,100% { background-position: 0% 50%; }
+      50%      { background-position: 100% 50%; }
+    }
+    .s1-sub {
+      font-style: italic; font-size: clamp(.9rem,2vw,1.1rem);
+      color: var(--muted); letter-spacing: 3px;
+      opacity: 0; animation: fadeUp 1.6s ease forwards 1.6s;
+      margin-bottom: 60px;
+    }
+    .s1-scroll {
+      position: absolute; bottom:36px; left:50%; transform:translateX(-50%);
+      z-index:2; display:flex; flex-direction:column; align-items:center; gap:10px;
+      opacity:0; animation:fadeUp 1.6s ease forwards 2.4s;
+    }
+    .s1-scroll span {
+      font-size:.64rem; letter-spacing:5px; text-transform:uppercase; color:var(--faint);
+    }
+    .s1-scroll .sline {
+      width:1px; height:44px;
+      background:linear-gradient(180deg,var(--rose),transparent);
+      animation: slinePulse 2s ease-in-out infinite;
+    }
+    @keyframes slinePulse { 0%,100%{opacity:.25;transform:scaleY(.9)} 50%{opacity:.9;transform:scaleY(1)} }
 
-/* final message */
-#final{
-position:absolute;
-font-size:clamp(20px,3vw,30px);
-opacity:0;
-transition:opacity 2s;
-}
+    /* ════ FULL PHOTO DIVIDER ════ */
+    .photo-full {
+      position: relative; overflow:hidden;
+      height: clamp(320px,55vw,580px);
+    }
+    .photo-full img {
+      width:100%; height:100%; object-fit:cover; display:block;
+      filter: brightness(0.6) saturate(0.75);
+      transition: transform 10s ease;
+    }
+    .photo-full:hover img { transform:scale(1.03); }
+    .photo-full .overlay-top {
+      position:absolute; top:0; left:0; right:0; height:30%;
+      background: linear-gradient(180deg, var(--black), transparent);
+      z-index:1;
+    }
+    .photo-full .overlay-bot {
+      position:absolute; bottom:0; left:0; right:0; height:35%;
+      background: linear-gradient(0deg, var(--black), transparent);
+      z-index:1;
+    }
+    .photo-label {
+      position:absolute; bottom:clamp(24px,4vw,50px); left:clamp(24px,8vw,100px);
+      z-index:2;
+      font-style:italic; font-size:.78rem; letter-spacing:3px; color:var(--muted);
+    }
 
-/* balloons */
-.balloon{
-position:fixed;
-bottom:-80px;
-font-size:clamp(20px,3vw,40px);
-animation:rise 10s linear forwards;
-pointer-events:none;
-}
-@keyframes rise{
-to{transform:translateY(-130vh);}
-}
+    /* ════ STORY SECTIONS ════ */
+    .story-wrap {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 clamp(24px,7vw,90px);
+    }
 
-/* particles */
-.spark{
-position:fixed;
-width:5px;
-height:5px;
-border-radius:50%;
-background:white;
-animation:floatUp 6s linear forwards;
-pointer-events:none;
-}
-@keyframes floatUp{
-to{transform:translateY(-120vh);opacity:0;}
-}
+    /* ─ chapter block ─ */
+    .ch {
+      padding: 100px 0 60px;
+      opacity:0; transform:translateY(40px);
+      transition: opacity 1s ease, transform 1s ease;
+    }
+    .ch.in { opacity:1; transform:translateY(0); }
 
-/* fade overlay */
-.overlay{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:black;
-opacity:0;
-transition:opacity 1.5s;
-pointer-events:none;
-}
-</style>
+    .ch-header {
+      display:flex; align-items:center; gap:22px;
+      margin-bottom:40px;
+    }
+    .ch-num {
+      font-family:'Playfair Display',serif;
+      font-size:clamp(4rem,10vw,8rem);
+      font-weight:900; font-style:italic;
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(201,132,138,0.2);
+      line-height:1; flex-shrink:0;
+    }
+    .ch-hline { flex:1; height:1px; background:rgba(201,132,138,0.15); }
+    .ch-tag {
+      font-size:.68rem; letter-spacing:5px; text-transform:uppercase;
+      color:var(--rose); white-space:nowrap; flex-shrink:0;
+    }
+
+    .ch h2 {
+      font-family:'Playfair Display',serif;
+      font-size:clamp(1.7rem,4vw,2.8rem);
+      font-weight:400; font-style:italic;
+      color: var(--cream);
+      line-height:1.3; margin-bottom:32px;
+    }
+
+    .ch p {
+      font-size:clamp(1rem,1.8vw,1.13rem);
+      color:rgba(242,237,230,0.65);
+      line-height:2.05; margin-bottom:20px;
+      font-weight:300;
+    }
+    .ch p em {
+      color:var(--rose-lt); font-style:italic; font-weight:300;
+    }
+    .ch p strong {
+      color:var(--gold-lt); font-weight:400;
+    }
+
+    /* pull quote */
+    .pull {
+      margin:44px 0; padding:30px 0 30px 36px;
+      border-left:1px solid var(--rose);
+      position:relative;
+    }
+    .pull::before {
+      content:'"';
+      font-family:'Playfair Display',serif;
+      font-size:5rem; font-style:italic;
+      color:rgba(201,132,138,0.15);
+      position:absolute; top:-10px; left:8px;
+      line-height:1;
+    }
+    .pull p {
+      font-family:'Playfair Display',serif;
+      font-style:italic;
+      font-size:clamp(1.15rem,2.2vw,1.45rem) !important;
+      color:rgba(242,237,230,0.82) !important;
+      line-height:1.75 !important;
+      margin:0 !important;
+    }
+
+    /* ─ split layout with photo ─ */
+    .split {
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:48px; align-items:center;
+      padding:80px 0;
+      opacity:0; transform:translateY(40px);
+      transition: opacity 1s ease, transform 1s ease;
+    }
+    .split.in { opacity:1; transform:translateY(0); }
+    .split.flip { direction:rtl; }
+    .split.flip > * { direction:ltr; }
+    @media(max-width:680px){ .split{grid-template-columns:1fr;}.split.flip{direction:ltr;} }
+
+    .split-img {
+      position:relative; aspect-ratio:3/4; overflow:hidden; border-radius:2px;
+    }
+    .split-img img {
+      width:100%;height:100%;object-fit:cover;
+      filter:brightness(0.7) saturate(0.75);
+      transition:transform 8s ease;
+    }
+    .split-img:hover img { transform:scale(1.04); }
+    .split-img::after {
+      content:''; position:absolute; inset:0;
+      background:linear-gradient(135deg,rgba(201,132,138,0.08),transparent 60%);
+    }
+
+    .split-text {}
+    .split-text .eyebrow {
+      font-size:.68rem; letter-spacing:5px; text-transform:uppercase;
+      color:var(--rose); display:block; margin-bottom:16px;
+    }
+    .split-text h2 {
+      font-family:'Playfair Display',serif;
+      font-size:clamp(1.5rem,3.5vw,2.4rem);
+      font-weight:400; font-style:italic;
+      color:var(--cream); line-height:1.3; margin-bottom:24px;
+    }
+    .split-text p {
+      font-size:clamp(.95rem,1.7vw,1.08rem);
+      color:rgba(242,237,230,0.6); line-height:2; margin-bottom:16px;
+      font-weight:300;
+    }
+    .split-text p em { color:var(--rose-lt); font-style:italic; }
+
+    /* ─ rule ─ */
+    .rule {
+      display:flex; align-items:center; gap:20px;
+      padding:20px 0;
+      opacity:0; transform:translateY(16px);
+      transition:opacity .9s ease,transform .9s ease;
+    }
+    .rule.in{opacity:1;transform:translateY(0);}
+    .rule-line{flex:1;height:1px;background:rgba(201,132,138,0.12);}
+    .rule-mark{
+      font-family:'Playfair Display',serif; font-style:italic;
+      font-size:.85rem; color:rgba(201,132,138,0.35); letter-spacing:2px;
+    }
+
+    /* ════ CLOSING ════ */
+    .closing {
+      position:relative; overflow:hidden;
+      min-height:100vh; display:flex;
+      align-items:center; justify-content:center;
+      opacity:0; transform:translateY(40px);
+      transition:opacity 1.2s ease,transform 1.2s ease;
+    }
+    .closing.in{opacity:1;transform:translateY(0);}
+    .closing-bg {
+      position:absolute; inset:0;
+      background: url('https://images.unsplash.com/photo-1519671282429-b44660ead0a7?w=1400&q=80') center/cover no-repeat;
+      filter:brightness(0.22) saturate(0.7);
+    }
+    .closing::before {
+      content:''; position:absolute; inset:0; z-index:1;
+      background:radial-gradient(ellipse at 50% 50%, rgba(7,6,10,0.2) 0%, rgba(7,6,10,0.88) 100%);
+    }
+    .closing-inner {
+      position:relative; z-index:2;
+      text-align:center; max-width:680px; padding:60px 28px;
+    }
+    .closing-candle { margin-bottom:44px; }
+    .closing-inner .c-tag {
+      font-size:.7rem; letter-spacing:6px; text-transform:uppercase;
+      color:var(--rose); display:block; margin-bottom:20px;
+    }
+    .closing-inner h2 {
+      font-family:'Playfair Display',serif;
+      font-size:clamp(2.4rem,7vw,5.5rem);
+      font-weight:400; font-style:italic;
+      line-height:1.1; margin-bottom:30px;
+      background:linear-gradient(135deg,var(--cream) 0%,var(--gold-lt) 50%,var(--rose-lt) 100%);
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+    }
+    .closing-inner p {
+      font-style:italic; font-size:clamp(1rem,2vw,1.18rem);
+      color:rgba(242,237,230,0.55); line-height:2;
+      margin-bottom:46px;
+    }
+    .wish-btn {
+      display:inline-block;
+      padding:14px 44px;
+      font-family:'Jost',sans-serif; font-weight:300;
+      font-style:italic; font-size:1rem; letter-spacing:3px;
+      color:var(--black);
+      background:linear-gradient(135deg,var(--rose-lt),var(--gold-lt));
+      border:none; border-radius:0; cursor:none;
+      box-shadow:0 6px 40px rgba(201,132,138,0.25);
+      transition:transform .25s, box-shadow .25s, filter .25s;
+    }
+    .wish-btn:hover { transform:translateY(-3px); box-shadow:0 10px 50px rgba(201,132,138,0.4); filter:brightness(1.05); }
+
+    /* footer */
+    .foot {
+      text-align:center; padding:50px 20px 60px;
+      border-top:1px solid rgba(201,132,138,0.1);
+    }
+    .foot span {
+      font-style:italic; font-size:.75rem; letter-spacing:4px; color:var(--faint);
+    }
+
+    /* confetti */
+    #cc { position:fixed;inset:0;pointer-events:none;z-index:997; }
+
+    /* dust */
+    .d { position:fixed;border-radius:50%;pointer-events:none;z-index:1;
+         animation:driftUp linear infinite;opacity:0; }
+    @keyframes driftUp {
+      0%{transform:translateY(105vh);opacity:0}
+      7%{opacity:.3} 93%{opacity:.1}
+      100%{transform:translateY(-8vh);opacity:0}
+    }
+
+    @keyframes fadeUp {
+      from{opacity:0;transform:translateY(18px)}
+      to{opacity:1;transform:translateY(0)}
+    }
+  </style>
 </head>
-
 <body>
 
-<div class="container">
-<div id="text" class="text"></div>
-<div id="cake">🎂</div>
-<div id="final"></div>
+<div id="cur"></div>
+<div id="cur2"></div>
+<div id="rbar"></div>
+<canvas id="cc"></canvas>
+
+<!-- ════ HERO ════ -->
+<section class="s1">
+  <div class="s1-bg"></div>
+  <div class="s1-content">
+    <p class="s1-pre">a story written for</p>
+    <h1 class="s1-name">chikuu</h1>
+    <p class="s1-sub">scroll and let the story unfold</p>
+  </div>
+  <div class="s1-scroll">
+    <span>begin</span>
+    <div class="sline"></div>
+  </div>
+</section>
+
+<!-- ════ PHOTO DIVIDER 1 ════ -->
+<div class="photo-full" data-r>
+  <img src="https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?w=1400&q=80" alt="warm bokeh candles" loading="lazy"/>
+  <div class="overlay-top"></div>
+  <div class="overlay-bot"></div>
+  <span class="photo-label">the morning light found you first</span>
 </div>
 
-<div id="overlay" class="overlay"></div>
+<!-- ════ STORY ════ -->
+<div class="story-wrap">
 
-<!-- optional music -->
-<audio id="music" src="music.mp3"></audio>
+  <!-- Chapter 1 -->
+  <div class="ch" data-r>
+    <div class="ch-header">
+      <span class="ch-num">01</span>
+      <div class="ch-hline"></div>
+      <span class="ch-tag">The Morning</span>
+    </div>
+    <h2>Before the world knew it was your day</h2>
+    <p>
+      It always does — finds you before anyone else does.
+      That quiet window of a few seconds where it's just you and the ceiling,
+      the room still soft with sleep, the world holding its breath
+      before it remembers what day it is.
+    </p>
+    <p>
+      But today is different, Chikuu. Today the universe
+      quietly made a note — somewhere in that space between
+      stars and mornings — and circled it in <em>invisible ink</em>.
+      Because today is the day you arrived, and nothing has been
+      quite the same since.
+    </p>
+    <div class="pull">
+      <p>Some days arrive softly. They slip in like early light through a curtain, and you only notice once you're already inside the warmth of them.</p>
+    </div>
+    <p>
+      That's today. That's <strong>your birthday</strong>.
+    </p>
+  </div>
+
+  <div class="rule" data-r>
+    <div class="rule-line"></div>
+    <span class="rule-mark">✦</span>
+    <div class="rule-line"></div>
+  </div>
+
+  <!-- Split: photo left, text right -->
+  <div class="split" data-r>
+    <div class="split-img">
+      <img src="https://images.unsplash.com/photo-1490750967868-88df5691cc52?w=800&q=80" alt="soft blooms" loading="lazy"/>
+    </div>
+    <div class="split-text">
+      <span class="eyebrow">Chapter Two</span>
+      <h2>On everything you carried this year</h2>
+      <p>
+        Every year asks something of you. This one was no exception.
+        Mornings that felt heavier than they should, decisions made in the half-dark,
+        moments where the right answer wasn't written anywhere you could find it.
+      </p>
+      <p>
+        And yet here you are — <em>carrying it all without it breaking you</em>.
+        Turning the sharp things into something quieter, something learned,
+        something that now fits where before it felt impossible to hold.
+      </p>
+      <p>
+        That's not a small thing, Chikuu. That's the whole thing.
+      </p>
+    </div>
+  </div>
+
+  <div class="rule" data-r>
+    <div class="rule-line"></div>
+    <span class="rule-mark">✦</span>
+    <div class="rule-line"></div>
+  </div>
+
+  <!-- Chapter 3 -->
+  <div class="ch" data-r>
+    <div class="ch-header">
+      <span class="ch-num">03</span>
+      <div class="ch-hline"></div>
+      <span class="ch-tag">The Small Things</span>
+    </div>
+    <h2>The moments no one will write about but you</h2>
+    <p>
+      Not the milestones. Not the photographs taken for keeping.
+      The other things — the cup of tea that tasted exactly right,
+      the song that arrived at precisely the moment you needed it,
+      the laugh that surprised even you with how whole it felt.
+    </p>
+    <p>
+      These are the chapters no biographer ever collects.
+      But they are, in truth, <em>the entire story</em>.
+      The texture of a beautiful life is made of exactly these —
+      ordinary moments, held with the kind of quiet care
+      only you know how to give.
+    </p>
+    <div class="pull">
+      <p>You don't need to do extraordinary things to live an extraordinary life. You only need to be fully, gently present for the small ones.</p>
+    </div>
+  </div>
+
+</div><!-- /story-wrap -->
+
+<!-- ════ PHOTO DIVIDER 2 ════ -->
+<div class="photo-full" data-r>
+  <img src="https://images.unsplash.com/photo-1511895426328-dc8714191011?w=1400&q=80" alt="golden bokeh" loading="lazy"/>
+  <div class="overlay-top"></div>
+  <div class="overlay-bot"></div>
+  <span class="photo-label">the light you carry with you</span>
+</div>
+
+<div class="story-wrap">
+
+  <!-- Split flipped: text left, photo right -->
+  <div class="split flip" data-r>
+    <div class="split-img">
+      <img src="https://images.unsplash.com/photo-1523438885200-e635ba2c371e?w=800&q=80" alt="soft bloom closeup" loading="lazy"/>
+    </div>
+    <div class="split-text">
+      <span class="eyebrow">Chapter Four</span>
+      <h2>What the next chapter holds for you</h2>
+      <p>
+        Nobody knows. That's precisely the point.
+        If we knew how every story ended, we'd skip to the last page
+        and miss the part where it gets interesting.
+      </p>
+      <p>
+        So here's what I wish for you, Chikuu — in the year ahead:
+        more of those unexpected turns. More doors that open sideways.
+        More of the version of you that walks through them
+        <em>without waiting for permission</em>.
+      </p>
+      <p>
+        You've always been that person.
+        This year, let the whole world catch up.
+      </p>
+    </div>
+  </div>
+
+</div>
+
+<!-- ════ CLOSING ════ -->
+<section class="closing" data-r>
+  <div class="closing-bg"></div>
+  <div class="closing-inner">
+    <!-- SVG Candle -->
+    <div class="closing-candle">
+      <svg width="44" viewBox="0 0 60 112" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="30" cy="9" rx="6.5" ry="10.5" fill="#f5c060" opacity="0.95">
+          <animate attributeName="ry" values="10.5;13;9;12;10.5" dur="1.3s" repeatCount="indefinite"/>
+          <animate attributeName="cx" values="30;29.4;30.6;30" dur="1s" repeatCount="indefinite"/>
+        </ellipse>
+        <ellipse cx="30" cy="13" rx="3" ry="5.5" fill="#fffce8" opacity="0.8">
+          <animate attributeName="ry" values="5.5;7;5;5.5" dur="0.9s" repeatCount="indefinite"/>
+        </ellipse>
+        <ellipse cx="30" cy="16" rx="13" ry="7" fill="#f5c060" opacity="0.07"/>
+        <line x1="30" y1="20" x2="30" y2="26" stroke="#3a2210" stroke-width="1.3" stroke-linecap="round"/>
+        <rect x="20" y="26" width="20" height="66" rx="2.5" fill="#1e1622"/>
+        <rect x="23" y="26" width="3" height="66" rx="1.5" fill="rgba(255,255,255,0.08)"/>
+        <path d="M20 45 Q17 52 20 55" stroke="rgba(255,255,255,0.1)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <ellipse cx="30" cy="93" rx="16" ry="5" fill="#140f1a"/>
+      </svg>
+    </div>
+    <span class="c-tag">for chikuu, always</span>
+    <h2>Happy Birthday,<br/>my dearest</h2>
+    <p>
+      May the year ahead read like your favourite kind of story —<br/>
+      the kind you can't put down,<br/>
+      the kind that ends with you wanting so much more.
+    </p>
+    <button class="wish-btn" onclick="celebrate()">make a wish →</button>
+  </div>
+</section>
+
+<footer class="foot">
+  <span>written with love · for chikuu · always</span>
+</footer>
 
 <script>
-
-const text = document.getElementById("text");
-const cake = document.getElementById("cake");
-const final = document.getElementById("final");
-const overlay = document.getElementById("overlay");
-const music = document.getElementById("music");
-
-/* transition */
-function fade(callback){
-overlay.style.opacity=1;
-setTimeout(()=>{
-callback();
-overlay.style.opacity=0;
-},1500);
-}
-
-/* timeline */
-
-setTimeout(()=>{
-text.innerHTML="Hey...";
-text.classList.add("show");
-},1000);
-
-setTimeout(()=>{
-text.innerHTML="I made something special...";
-},4000);
-
-setTimeout(()=>{
-text.innerHTML="Just for you 💖";
-text.classList.add("glow");
-startParticles();
-},7000);
-
-setTimeout(()=>{
-fade(()=>{
-startBalloons();
+// cursor
+const cur = document.getElementById('cur'), cur2 = document.getElementById('cur2');
+document.addEventListener('mousemove', e => {
+  cur.style.left = e.clientX+'px'; cur.style.top = e.clientY+'px';
+  setTimeout(()=>{ cur2.style.left=e.clientX+'px'; cur2.style.top=e.clientY+'px'; },90);
 });
-},10000);
-
-setTimeout(()=>{
-fade(()=>{
-text.classList.remove("show");
-cake.style.opacity=1;
+document.querySelectorAll('button,a').forEach(el=>{
+  el.addEventListener('mouseenter',()=>cur.style.transform='translate(-50%,-50%) scale(2.5)');
+  el.addEventListener('mouseleave',()=>cur.style.transform='translate(-50%,-50%) scale(1)');
 });
-},14000);
 
-setTimeout(()=>{
-fade(()=>{
-cake.style.opacity=0;
-final.innerHTML="Happy Birthday 🎉<br>You are truly special 💖";
-final.style.opacity=1;
+// progress
+const bar=document.getElementById('rbar');
+window.addEventListener('scroll',()=>{
+  const h=document.documentElement;
+  bar.style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%';
 });
-},19000);
 
-/* particles */
-function startParticles(){
-setInterval(()=>{
-let s=document.createElement("div");
-s.className="spark";
-s.style.left=Math.random()*100+"vw";
-document.body.appendChild(s);
-setTimeout(()=>s.remove(),6000);
-},150);
+// reveal
+const io=new IntersectionObserver(entries=>
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in');}),
+  {threshold:.08});
+document.querySelectorAll('[data-r]').forEach(el=>io.observe(el));
+
+// dust
+function makeDust(){
+  const d=document.createElement('div');
+  d.className='d';
+  const s=Math.random()*2.5+.5;
+  const dur=Math.random()*28+16;
+  const colors=['rgba(201,132,138,','rgba(212,169,106,','rgba(242,237,230,'];
+  const c=colors[~~(Math.random()*colors.length)];
+  d.style.cssText=`width:${s}px;height:${s}px;left:${Math.random()*100}%;`
+    +`background:${c}${Math.random()*.22+.04});`
+    +`animation-duration:${dur}s;animation-delay:${Math.random()*12}s;`;
+  document.body.appendChild(d);
+  setTimeout(()=>d.remove(),(dur+12)*1000);
 }
+setInterval(makeDust,2800); for(let i=0;i<7;i++) makeDust();
 
-/* balloons */
-function startBalloons(){
-setInterval(()=>{
-let b=document.createElement("div");
-b.className="balloon";
-b.innerHTML="🎈";
-b.style.left=Math.random()*window.innerWidth+"px";
-document.body.appendChild(b);
-setTimeout(()=>b.remove(),10000);
-},500);
+// confetti
+const cv=document.getElementById('cc'),cx=cv.getContext('2d');
+function rsz(){cv.width=window.innerWidth;cv.height=window.innerHeight;}
+rsz(); window.addEventListener('resize',rsz);
+let pp=[],going=false;
+
+function celebrate(){
+  const cols=['#c9848a','#e0b0b6','#d4a96a','#e8c898','#f2ede6','#b06070','#c8a040'];
+  for(let i=0;i<120;i++) pp.push({
+    x:Math.random()*cv.width, y:-10-Math.random()*100,
+    w:Math.random()*8+3, h:Math.random()*14+5,
+    c:cols[~~(Math.random()*cols.length)],
+    vx:(Math.random()-.5)*4, vy:Math.random()*3.5+2,
+    r:Math.random()*Math.PI*2, rv:(Math.random()-.5)*.1, a:1
+  });
+  if(!going){going=true;requestAnimationFrame(tick);}
 }
-
-/* music start on first click */
-document.addEventListener("click",()=>{
-music.play().catch(()=>{});
-},{once:true});
-
+function tick(){
+  cx.clearRect(0,0,cv.width,cv.height);
+  pp=pp.filter(p=>p.a>.015&&p.y<cv.height+30);
+  pp.forEach(p=>{
+    p.y+=p.vy;p.x+=p.vx;p.r+=p.rv;p.vy+=.04;p.a-=.0038;
+    cx.save();cx.translate(p.x,p.y);cx.rotate(p.r);
+    cx.globalAlpha=p.a;cx.fillStyle=p.c;
+    cx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+    cx.restore();
+  });
+  if(pp.length)requestAnimationFrame(tick);
+  else{going=false;cx.clearRect(0,0,cv.width,cv.height);}
+}
 </script>
-
 </body>
 </html>
